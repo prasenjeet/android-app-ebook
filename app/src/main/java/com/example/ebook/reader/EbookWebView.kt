@@ -6,9 +6,6 @@ import android.util.AttributeSet
 import android.webkit.WebSettings
 import android.webkit.WebView
 
-/**
- * Preconfigured WebView for rendering ebook HTML pages from assets.
- */
 @SuppressLint("SetJavaScriptEnabled")
 class EbookWebView @JvmOverloads constructor(
     context: Context,
@@ -19,6 +16,10 @@ class EbookWebView @JvmOverloads constructor(
         with(settings) {
             javaScriptEnabled = true
             allowFileAccess = true
+            @Suppress("DEPRECATION")
+            allowFileAccessFromFileURLs = true
+            @Suppress("DEPRECATION")
+            allowUniversalAccessFromFileURLs = true
             cacheMode = WebSettings.LOAD_NO_CACHE
             textZoom = 100
             loadWithOverviewMode = true
@@ -31,7 +32,11 @@ class EbookWebView @JvmOverloads constructor(
         isVerticalScrollBarEnabled = false
     }
 
-    fun loadPage(assetPath: String) {
-        loadUrl("file:///android_asset/$assetPath")
+    fun loadPage(path: String) {
+        when {
+            path.startsWith("file://") -> loadUrl(path)
+            path.startsWith("/") -> loadUrl("file://$path")
+            else -> loadUrl("file:///android_asset/$path")
+        }
     }
 }

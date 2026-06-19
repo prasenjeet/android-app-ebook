@@ -21,10 +21,15 @@ import kotlinx.coroutines.launch
 
 class ReaderActivity : AppCompatActivity() {
 
+    companion object {
+        const val EXTRA_PAGES = "extra_pages"
+        const val EXTRA_IS_ASSET = "extra_is_asset"
+        const val EXTRA_TITLE = "extra_title"
+    }
+
     private lateinit var binding: ActivityReaderBinding
     private val vm: ReaderViewModel by viewModels()
 
-    // Off-screen WebViews used to snapshot pages into Bitmaps for the curl overlay
     private lateinit var offscreenPrev: EbookWebView
     private lateinit var offscreenCurrent: EbookWebView
     private lateinit var offscreenNext: EbookWebView
@@ -34,14 +39,19 @@ class ReaderActivity : AppCompatActivity() {
         binding = ActivityReaderBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Initialise ViewModel with pages passed from MainActivity
+        val pages = intent.getStringArrayListExtra(EXTRA_PAGES) ?: emptyList<String>()
+        val isAsset = intent.getBooleanExtra(EXTRA_IS_ASSET, true)
+        val title = intent.getStringExtra(EXTRA_TITLE) ?: ""
+        if (pages.isNotEmpty()) vm.initPages(pages, isAsset)
+        if (title.isNotEmpty()) supportActionBar?.title = title
+
         setupOffscreenWebViews()
         setupCurlView()
         setupNavigation()
         observeFoldingState()
 
-        vm.currentIndex.observe(this) { idx ->
-            updateReader(idx)
-        }
+        vm.currentIndex.observe(this) { idx -> updateReader(idx) }
     }
 
     // ── Off-screen rendering ─────────────────────────────────────────────────
@@ -66,25 +76,21 @@ class ReaderActivity : AppCompatActivity() {
     private fun snapshotWebView(webView: EbookWebView): Bitmap {
         val w = webView.width.coerceAtLeast(1)
         val h = webView.height.coerceAtLeast(1)
-        val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
-        webView.draw(Canvas(bmp))
-        return bmp
+        return Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).also {
+            webView.draw(Canvas(it))
+        }
     }
 
-    private fun loadPageAsBitmap(
-        assetPath: String,
-        target: EbookWebView,
-        onReady: (Bitmap) -> Unit
-    ) {
+    private fun loadPageAsBitmap(path: String, target: EbookWebView, onReady: (Bitmap) -> Unit) {
         target.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 view?.postDelayed({ onReady(snapshotWebView(target)) }, 120)
             }
         }
-        target.loadPage(assetPath)
+        target.loadPage(path)
     }
 
-    // ── PageCurlView setup ───────────────────────────────────────────────────
+    // ── PageCurlView ─────────────────────────────────────────────────────────
 
     private fun setupCurlView() {
         binding.pageCurlView.onPageFlipped = { delta -> vm.advance(delta) }
@@ -93,30 +99,28 @@ class ReaderActivity : AppCompatActivity() {
     // ── Navigation ───────────────────────────────────────────────────────────
 
     private fun setupNavigation() {
-        binding.btnPrev.setOnClickListener { vm.advance(-1) }
-        binding.btnNext.setOnClickListener { vm.advance(+1) }
+        // Route button presses through the curl animation
+        binding.btnPrev.setOnClickListener { binding.pageCurlView.flipBackward() }
+        binding.btnNext.setOnClickListener { binding.pageCurlView.flipForward() }
     }
 
     private fun updateReader(pageIndex: Int) {
-        val pages = vm.book.pages
+        val pages = vm.pages
         if (pages.isEmpty()) return
 
         binding.pageIndicator.text = "${pageIndex + 1} / ${pages.size}"
         binding.btnPrev.isEnabled = pageIndex > 0
         binding.btnNext.isEnabled = pageIndex < pages.size - 1
 
-        // Primary WebView — visible reading pane
         binding.mainWebView.loadPage(pages[pageIndex])
 
         val curl = binding.pageCurlView
 
-        // Current page bitmap (required for both curl directions)
         loadPageAsBitmap(pages[pageIndex], offscreenCurrent) { bmp ->
             curl.currentPageBitmap = bmp
             curl.invalidate()
         }
 
-        // Previous page bitmap (revealed when curling backward)
         if (pageIndex > 0) {
             loadPageAsBitmap(pages[pageIndex - 1], offscreenPrev) { bmp ->
                 curl.prevPageBitmap = bmp
@@ -126,7 +130,6 @@ class ReaderActivity : AppCompatActivity() {
             curl.prevPageBitmap = null
         }
 
-        // Next page bitmap (revealed when curling forward)
         if (pageIndex + 1 < pages.size) {
             loadPageAsBitmap(pages[pageIndex + 1], offscreenNext) { bmp ->
                 curl.nextPageBitmap = bmp
@@ -156,16 +159,13 @@ class ReaderActivity : AppCompatActivity() {
 
     private fun handleFoldingFeature(fold: FoldingFeature?) {
         when {
-            fold == null -> setSinglePanel()
-
-            fold.state == FoldingFeature.State.FLAT &&
+            fold != null &&
+                    fold.state == FoldingFeature.State.FLAT &&
                     fold.orientation == FoldingFeature.Orientation.VERTICAL -> {
-                // Fully open Z Fold 5 in book mode: two-page spread
                 binding.secondaryWebView.visibility = View.VISIBLE
                 binding.divider.visibility = View.VISIBLE
                 loadDualPageLayout()
             }
-
             else -> setSinglePanel()
         }
     }
@@ -177,11 +177,9 @@ class ReaderActivity : AppCompatActivity() {
 
     private fun loadDualPageLayout() {
         val idx = vm.currentIndex.value ?: 0
-        val pages = vm.book.pages
+        val pages = vm.pages
         binding.mainWebView.loadPage(pages[idx])
         val nextIdx = (idx + 1).coerceAtMost(pages.size - 1)
-        if (nextIdx != idx) {
-            binding.secondaryWebView.loadPage(pages[nextIdx])
-        }
+        if (nextIdx != idx) binding.secondaryWebView.loadPage(pages[nextIdx])
     }
 }
