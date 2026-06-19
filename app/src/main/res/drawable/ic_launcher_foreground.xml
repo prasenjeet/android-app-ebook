@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Open book icon -->
+    <path
+        android:fillColor="#F5E6C8"
+        android:pathData="M54,28 L28,34 L28,80 L54,74 Z" />
+    <path
+        android:fillColor="#EDD9A3"
+        android:pathData="M54,28 L80,34 L80,80 L54,74 Z" />
+    <path
+        android:strokeColor="#C8A46E"
+        android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M54,28 L54,74" />
+    <!-- Page lines left -->
+    <path
+        android:strokeColor="#C8A46E"
+        android:strokeWidth="1.5"
+        android:pathData="M33,42 L51,39" />
+    <path
+        android:strokeColor="#C8A46E"
+        android:strokeWidth="1.5"
+        android:pathData="M33,49 L51,46" />
+    <path
+        android:strokeColor="#C8A46E"
+        android:strokeWidth="1.5"
+        android:pathData="M33,56 L51,53" />
+    <!-- Page lines right -->
+    <path
+        android:strokeColor="#C8A46E"
+        android:strokeWidth="1.5"
+        android:pathData="M57,39 L75,42" />
+    <path
+        android:strokeColor="#C8A46E"
+        android:strokeWidth="1.5"
+        android:pathData="M57,46 L75,49" />
+    <path
+        android:strokeColor="#C8A46E"
+        android:strokeWidth="1.5"
+        android:pathData="M57,53 L75,56" />
+</vector>

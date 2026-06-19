@@ -1,0 +1,147 @@
+/* Shared stylesheet for all ebook HTML pages */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --page-bg: #FFF8F0;
+    --text-color: #1A1A1A;
+    --heading-color: #5C2E00;
+    --accent: #8B4513;
+    --drop-cap-size: 3.8rem;
+    --body-font: Georgia, 'Times New Roman', serif;
+    --ui-font: 'Segoe UI', Roboto, sans-serif;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    background-color: var(--page-bg);
+    color: var(--text-color);
+    font-family: var(--body-font);
+    line-height: 1.75;
+    overflow-x: hidden;
+}
+
+.page {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+    min-height: 100vh;
+}
+
+/* ── Chapter heading ─────────────────────────────── */
+.chapter-heading {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.chapter-number {
+    font-family: var(--ui-font);
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 8px;
+}
+
+.chapter-title {
+    font-size: 1.65rem;
+    color: var(--heading-color);
+    font-style: italic;
+    margin-bottom: 24px;
+}
+
+.chapter-rule {
+    border: none;
+    border-top: 1px solid var(--accent);
+    width: 60px;
+    margin: 0 auto 32px;
+}
+
+/* ── Body copy ───────────────────────────────────── */
+p {
+    margin-bottom: 1.1em;
+    text-align: justify;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    font-size: 1.05rem;
+}
+
+/* Drop-cap on first paragraph */
+.drop-cap::first-letter {
+    float: left;
+    font-size: var(--drop-cap-size);
+    line-height: 0.75;
+    margin-top: 6px;
+    margin-right: 6px;
+    color: var(--accent);
+    font-weight: bold;
+}
+
+/* ── Blockquote ──────────────────────────────────── */
+blockquote {
+    border-left: 3px solid var(--accent);
+    margin: 24px 0;
+    padding: 8px 20px;
+    font-style: italic;
+    color: #555;
+}
+
+/* ── Decorative flourish ─────────────────────────── */
+.section-break {
+    text-align: center;
+    color: var(--accent);
+    margin: 24px 0;
+    letter-spacing: 0.4em;
+}
+
+/* ── Cover page ──────────────────────────────────── */
+.cover-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(160deg, #5C2E00 0%, #8B4513 60%, #A0522D 100%);
+    color: #F5E6C8;
+    padding: 40px;
+    text-align: center;
+}
+
+.cover-title {
+    font-size: 2.4rem;
+    line-height: 1.25;
+    margin-bottom: 16px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.cover-subtitle {
+    font-size: 1.1rem;
+    letter-spacing: 0.12em;
+    margin-bottom: 32px;
+    opacity: 0.85;
+}
+
+.cover-author {
+    font-size: 1.2rem;
+    font-style: italic;
+    opacity: 0.9;
+}
+
+.cover-rule {
+    border: none;
+    border-top: 1px solid rgba(245,230,200,0.5);
+    width: 80px;
+    margin: 24px auto;
+}
+
+.cover-ornament {
+    font-size: 2rem;
+    margin: 16px 0;
+    opacity: 0.7;
+}

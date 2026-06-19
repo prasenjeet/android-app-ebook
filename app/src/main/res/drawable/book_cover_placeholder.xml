@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Simple vector placeholder for the book cover -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="220dp"
+    android:height="300dp"
+    android:viewportWidth="220"
+    android:viewportHeight="300">
+
+    <!-- Book background -->
+    <path android:fillColor="#8B4513"
+        android:pathData="M0,0 L220,0 L220,300 L0,300 Z" />
+
+    <!-- Spine shadow -->
+    <path android:fillColor="#6B3010"
+        android:pathData="M0,0 L20,0 L20,300 L0,300 Z" />
+
+    <!-- Title area -->
+    <path android:fillColor="#A0522D"
+        android:pathData="M30,60 L190,60 L190,180 L30,180 Z" />
+
+    <!-- Decorative border -->
+    <path android:strokeColor="#D2691E" android:strokeWidth="2"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M24,24 L196,24 L196,276 L24,276 Z" />
+
+    <!-- Inner decorative border -->
+    <path android:strokeColor="#CD853F" android:strokeWidth="1"
+        android:fillColor="@android:color/transparent"
+        android:pathData="M28,28 L192,28 L192,272 L28,272 Z" />
+</vector>
